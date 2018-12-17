@@ -1,0 +1,90 @@
+---
+# Dla wszystkich
+- hosts: all
+  sudo: yes
+  gather_facts: no
+
+
+  tasks:
+
+  - name: install vim
+    apt: name=vim state="installed" update_cache=yes
+
+# Dla serwerow DB
+- hosts: db
+  sudo: yes
+
+  tasks:
+  - name: install mysql server
+    apt:
+      name: "{{ item }}"
+    with_items:
+      - python-mysqldb
+      - mysql-server
+  
+  - name: CREATE DATABASE wp_db
+    mysql_db:
+      name: wp_db
+      state: present
+      
+  - name: kopiowanie wp.sql
+    template: src=wp.sql dest=~/wp.sql 
+     
+  - name: Restore database
+    mysql_db:
+      name: wp_db
+      state: import
+      target: ~/wp.sql
+
+  - name: kopiowanie my.cnf i restart myqsl
+    template: src=my.cnf dest=/etc/mysql/my.cnf
+   
+  - name: restart mysql
+    service: name=mysql state=restarted
+
+# Dla serwerow WEB
+- hosts: web
+  sudo: yes
+    
+
+  tasks:
+  - name: install nginx
+    apt: name=nginx state=installed
+
+  - name: install php5-mysql
+    apt: name=php5-mysql state=installed
+
+  - name: install php5-fpm
+    apt: name=php5-fpm state=installed
+
+    #- name: kopiowanie php.ini
+    #template: src=php.ini dest=/etc/php5/fpm/php.ini
+    
+  - name: kopiowanie www.conf
+    template: src=www.conf dest=/etc/php5/fpm/pool.d/www.conf
+    notify: restart php5-fpm
+  
+  - name: kopiowanie default
+    template: src=default dest=/etc/nginx/sites-enabled/default
+  
+  
+  - name: download wordpress and unpack
+    unarchive: 
+      src: http://wordpress.org/latest.tar.gz 
+      dest: /var/www/html/ 
+      remote_src: True        
+
+  - name: kopiowanie wp-config.php
+    template: src=wp-config.php dest=/var/www/html/wordpress/wp-config.php
+
+  - name: kopiowanie nginx.conf
+    template: src=nginx.conf dest=/etc/nginx/nginx.conf
+    notify: restart nginx
+    
+  handlers:
+
+  - name: restart php5-fpm
+    service: name=php5-fpm state=restarted
+
+  - name: restart nginx
+    service: name=nginx state=restarted
