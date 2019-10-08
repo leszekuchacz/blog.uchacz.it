@@ -1,0 +1,26 @@
+- hosts: localhost
+  vars:
+    ver: "4.2.1"
+  tasks:
+  - debug:
+          msg: "ver: {{ ver }}" 
+  - debug:
+          msg: "ver.split: {{ ver.split('.') }}"
+  - debug:
+          msg: "ver2|default: {{ ver2 | default('4.2.1') }}"
+  - debug:
+          msg: "ver|to_nice_json: {{ ver | to_nice_json }}"
+  - debug:
+          msg: "ver|quote : {{ ver | quote }}" 
+  - debug:
+          msg: "ver|basename : {{ ver | basename }}" 
+  - debug:
+          msg: "ver|regex_replace : {{ ver | regex_replace('..$') }}" 
+  - debug:
+          msg: "ver|regex_replace : {{ ver | regex_replace('\\..$','.x') }}" 
+  - debug:
+          msg: "ver[2:]  : {{ ver[2:]  }}" 
+  - debug:
+          msg: "ver[:2]  : {{ ver[:2]  }}" 
+  - debug:
+          msg: "ver[2]  : {{ ver[2]  }}" 
