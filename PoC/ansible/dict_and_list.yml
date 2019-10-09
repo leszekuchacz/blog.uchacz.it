@@ -1,0 +1,27 @@
+---
+
+- hosts: localhost
+  vars:
+    dict: { ver: "4.2.1", name: "MULE" }
+    list_dict:
+      - { ver: "4.2.1", name: "MULE"}
+      - { ver: "3.9.0", name: "MULE"}
+    dict_list: 
+       3.9.0: 
+         - { filename : "aaaa", dest: "ccc" }
+         - { filename : "bbbb", dest: "cc" }
+       4.2.1: 
+         - { filename : "aaaa", dest: "ccc" }
+         - { filename : "bbbb", dest: "cc" }
+  tasks:
+  - debug:
+          msg: "dict.ver: {{ dict.ver }}" 
+
+  - debug:
+          msg: "item.ver: {{ item.ver }}" 
+    with_items: "{{ list_dict }}"
+
+  - debug:
+          msg: "{{ item.filename }}"
+    with_items: "{{ dict_list['3.9.0'] }}"
+
