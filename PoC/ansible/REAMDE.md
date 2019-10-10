@@ -10,3 +10,7 @@ ansible-playbook string.yml
 ```
 ansible-playbook dict_and_list.yml 
 ``` 
+## 3. set to default vars if not defined in host_vars
+```
+ansible-playbook default_vars_if_not_defined.yml 
+``` 

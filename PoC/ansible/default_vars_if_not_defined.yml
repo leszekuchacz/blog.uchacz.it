@@ -1,0 +1,23 @@
+
+- hosts: localhost
+  vars:
+    default:
+       4.2.1:
+          jdk_version: "11+28"
+          jdk_type: "openjdk"
+          aws_security_group: "sg-1212121212"
+    app_version:  "4.2.1"
+    jdk_version: "12+1"
+  tasks:
+ 
+  - name: "set to  default if not defined for version"
+    set_fact:
+      "{{ item }}" : "{{ default[app_version][item]  }}"
+    with_items: "{{ default[app_version]  }}"
+    when: "vars[item]  is not defined"
+
+  - name: "Show vars"
+    debug:
+      msg: "My app {{app_version }} use  {{ jdk_type }}-{{ jdk_version  }}"
+
+
